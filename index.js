@@ -1,14 +1,26 @@
-const express = require("express")
-const app = express()
-const mongoose = require("mongoose")
+const express = require("express");
+const app = express();
+const { default: mongoose } = require("mongoose");
+const dotenv = require("dotenv");
+const authRoute = require("./routes/auth");
+const userRoute = require("./routes/users")
 
-mongoose.connect("mongodb+srv://pasta:mymumzgangsta@cluster0.kvabqh5.mongodb.net/shop?retryWrites=true&w=majority")
-    .then(() => {
+dotenv.config()
+
+mongoose.set('strictQuery', true);
+mongoose.connect(process.env.MONGO_URL).then(() => {
     console.log("mongo db running")
 }).catch((err) => {
-        console.log(err);
-    })
+    console.log(err);
+});
 
-app.listen(5000, () => {
+app.use(express.json());
+
+// api routes
+app.use("/auth", authRoute);
+app.use("/users", userRoute);
+
+
+app.listen(process.env.PORT || 5000, () => {
     console.log("app running");
 })
